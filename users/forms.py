@@ -15,3 +15,10 @@ class RegisterUserForm(UserCreationForm):
             'email': 'E-mail',
             'first_name': 'Имя'
         }
+
+    def clean_email(self):
+        model = get_user_model()
+        cd = self.cleaned_data
+        if model.objects.filter(email=self.cleaned_data['email']).exists():
+            raise forms.ValidationError('Пользователь с таким E-mail уже зарегестрирован')
+        return self.cleaned_data['email']
