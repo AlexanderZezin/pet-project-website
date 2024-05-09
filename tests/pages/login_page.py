@@ -9,7 +9,7 @@ class LoginPage(BasePage):
         assert self.is_element_present(*LPL.PASSWORD_INPUT), "Не найдено поле ввода password"
         assert self.is_element_present(*LPL.LOGIN_BUTTON), "Не найдена кнопка авторизации"
         assert self.is_element_present(
-            *LPL.REGISTRATE_REDIRECT_BUTTON), "Не найдена кнопка перехода на страницу регистрации"
+            *LPL.REGISTRATE_LINK_BUTTON), "Не найдена кнопка перехода на страницу регистрации"
 
     def input_data(self, username, password):
         self.driver.find_element(*LPL.USERNAME_INPUT).send_keys(username)
@@ -19,4 +19,4 @@ class LoginPage(BasePage):
         self.driver.find_element(*LPL.LOGIN_BUTTON).click()
 
     def click_registrate_redirect_button(self):
-        self.driver.find_element(*LPL.REGISTRATE_REDIRECT_BUTTON).click()
+        self.driver.find_element(*LPL.REGISTRATE_LINK_BUTTON).click()

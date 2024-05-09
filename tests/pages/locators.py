@@ -9,7 +9,7 @@ class RegistrationPageLocators:
     PASSWORD1_INPUT = (By.NAME, 'password1')
     PASSWORD2_INPUT = (By.NAME, 'password2')
     REGISTRATE_BUTTON = (By.CSS_SELECTOR, 'form button:first-child')
-    LOGIN_REDIRECT_BUTTON = (By.CSS_SELECTOR, 'form button:last-child')
+    LOGIN_LINK_BUTTON = (By.CSS_SELECTOR, 'form button:last-child')
 
 
 class LoginPageLocators:
@@ -17,7 +17,7 @@ class LoginPageLocators:
     USERNAME_INPUT = (By.NAME, "username")
     PASSWORD_INPUT = (By.NAME, 'password')
     LOGIN_BUTTON = (By.CSS_SELECTOR, 'form button:first-child')
-    REGISTRATE_REDIRECT_BUTTON = (By.CSS_SELECTOR, 'form button:last-child')
+    REGISTRATE_LINK_BUTTON = (By.CSS_SELECTOR, 'form button:last-child')
 
 
 class ProfilePageLocators:

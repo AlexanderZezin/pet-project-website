@@ -11,10 +11,13 @@ class RegisterPage(BasePage):
         assert self.is_element_present(*RPL.PASSWORD1_INPUT), "Не найдено поле ввода password1"
         assert self.is_element_present(*RPL.PASSWORD2_INPUT), "Не найдено поле ввода password2"
         assert self.is_element_present(*RPL.REGISTRATE_BUTTON), "Не найдена кнопка регистрации"
-        assert self.is_element_present(*RPL.LOGIN_REDIRECT_BUTTON), "Не найдена кнопка перехода на страницу авторизации"
+        assert self.is_element_present(*RPL.LOGIN_LINK_BUTTON), "Не найдена кнопка перехода на страницу авторизации"
 
     def click_register_button(self):
         self.driver.find_element(*RPL.REGISTRATE_BUTTON).click()
+
+    def click_login_link_button(self):
+        self.driver.find_element(*RPL.LOGIN_LINK_BUTTON).click()
 
     def input_data(self, username, first_name, email, password1, password2):
         self.driver.find_element(*RPL.USERNAME_INPUT).send_keys(username)
