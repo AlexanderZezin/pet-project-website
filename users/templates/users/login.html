@@ -1,19 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Регистрация</h1>
+<h1>Авторизация</h1>
 
-<form method="post" name="register_form">
+<form method="post" name="login_form">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}" />
+    {{ user.username }} {{ user_name }}
     <div >{{ form.non_field_errors }}</div>
     {% for f in form %}
     <p><label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}</p>
     <div >{{ f.errors }}</div>
     {% endfor %}
     <p>
-        <button type="submit">Регистрация</button>
-        <button><a href="{% url 'users:login' %}">Войти</a></button>
+        <button type="submit">Войти</button>
+        <button><a href="{% url 'users:register' %}">Регистрация</a></button>
     </p>
 </form>
 
