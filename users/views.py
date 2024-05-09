@@ -24,3 +24,16 @@ class RegisterUser(CreateView):
     template_name = 'users/register.html'
     extra_context = {'title': 'Регистрация'}
     success_url = reverse_lazy('users:login')
+
+
+class ProfileUser(LoginRequiredMixin, UpdateView):
+    model = get_user_model()
+    form_class = UserProfile
+    template_name = 'users/profile.html'
+    extra_context = {'title': 'Профиль пользователя'}
+
+    def get_success_url(self):
+        return reverse_lazy('users:profile')
+
+    def get_object(self, queryset=None):
+        return self.request.user

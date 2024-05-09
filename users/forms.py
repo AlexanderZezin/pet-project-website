@@ -21,5 +21,13 @@ class RegisterUserForm(UserCreationForm):
         email = self.cleaned_data['email']
         if model.objects.filter(email=email).exists():
             raise forms.ValidationError('Пользователь с таким E-mail уже зарегестрирован')
-        return self.cleaned_data['email']
         return email
+
+
+class UserProfile(forms.ModelForm):
+    username = forms.CharField(disabled=True, label='Логин')
+    email = forms.CharField(disabled=True, label='E-mail')
+
+    class Meta:
+        model = get_user_model()
+        fields = ['username', 'first_name', 'email']
