@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django import forms
 
 
@@ -22,6 +22,11 @@ class RegisterUserForm(UserCreationForm):
         if model.objects.filter(email=email).exists():
             raise forms.ValidationError('Пользователь с таким E-mail уже зарегестрирован')
         return email
+
+
+class LoginUserForm(AuthenticationForm):
+    username = forms.CharField(label='Имя пользователя или E-mail', widget=forms.TextInput())
+    password = forms.CharField(label='Введите пароль', widget=forms.PasswordInput())
 
 
 class UserProfile(forms.ModelForm):
