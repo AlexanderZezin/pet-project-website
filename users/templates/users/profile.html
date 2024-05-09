@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>{{ title }}</h1>
-<form method="post" name="user_profile">
+<form method="post" name="profile_form">
     {% csrf_token %}
     <div>{{ form.non_field_errors }}</div>
     {% for f in form %}
@@ -13,7 +13,7 @@
         <button type="submit">Изменить</button>
     </p>
 </form>
-<form method="post" action="{% url 'users:logout' %}">
+<form method="post" action="{% url 'users:logout' %}" name="logout_form">
     {% csrf_token %}
     <button type="submit">Выйти</button>
 </form>

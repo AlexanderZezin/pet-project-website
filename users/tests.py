@@ -6,6 +6,7 @@ from django.urls import reverse
 from selenium import webdriver
 
 from tests.pages.login_page import LoginPage
+from tests.pages.profile_page import ProfilePage
 from tests.pages.register_page import RegisterPage
 from website_django import settings
 
@@ -150,10 +151,10 @@ class LoginUserSeleniumTests(StaticLiveServerTestCase):
     def test_user_login_success(self):
         data = {
             'username': 'user1',
-            'password': 'user1user',
+            'password': 'user1user1',
         }
         user_model = get_user_model()
-        user_model.objects.create(username=data['username'])
+        user_model.objects.create_user(username=data['username'])
         user = user_model.objects.get(username=data['username'])
         user.set_password(data['password'])
         user.save()
@@ -176,3 +177,48 @@ class LoginUserSeleniumTests(StaticLiveServerTestCase):
         self.assertTrue(
             self.driver.current_url, f'{self.live_server_url}{reverse("users:register")}'
         ), 'Не выполнен переход на страницу регистрации'
+
+
+class ProfileUserTestCase(TestCase):
+    def setUp(self):
+        self.path = reverse('users:profile')
+        self.data = {
+            'username': 'user1',
+            'email': 'user1@mail.ru',
+            'password': 'user1user1',
+            'first_name': 'Alexander'
+        }
+        self.user_model = get_user_model()
+        self.user_model.objects.create_user(
+            username=self.data['username'],
+            password=self.data['password'],
+            email=self.data['email'],
+            first_name=self.data['first_name']
+        )
+        self.client.login(username=self.data['username'], password=self.data['password'])
+
+    def test_form_user_profile_get(self):
+        response = self.client.get(self.path)
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertTemplateUsed(response, 'users/profile.html'), "Не тот шаблон html"
+
+    def test_authenticated_user(self):
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+    def test_update_profile_success(self):
+        data = {'first_name': 'Alexander1'}
+        response = self.client.post(self.path, data)
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND), "После сохранения изменений не произошла переодресация"
+        self.assertRedirects(response, reverse('users:profile')), "Переодресация на другой адрес"
+        self.assertEqual(
+            data['first_name'],
+            self.user_model.objects.get(username=self.data['username']).first_name
+        ), "Изменения не сохранились в БД"
+
+    def test_user_logout(self):
+        response = self.client.post(reverse('users:logout'))
+        self.assertFalse(get_user(self.client).is_authenticated), "Пользователь не вышел"
+        self.assertEqual(response.status_code, HTTPStatus.FOUND), "Не выполнена переодресация после выхода"
+        self.assertRedirects(response, reverse(settings.LOGOUT_REDIRECT_URL)), "Переодресация на другой адрес"
