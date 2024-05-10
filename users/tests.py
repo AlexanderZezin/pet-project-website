@@ -22,8 +22,8 @@ class RegisterUserTestCase(TestCase):
     def test_form_register_get(self):
         response = self.client.get(self.path)
 
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertTemplateUsed(response, 'users/register.html')
+        self.assertEqual(response.status_code, HTTPStatus.OK, "Страница не загружена")
+        self.assertTemplateUsed(response, 'users/register.html', "Загружен другой шаблон")
 
     def test_user_registration_success(self):
         response = self.client.post(self.path, self.data)
@@ -86,7 +86,7 @@ class LoginUserTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_authenticated, "Пользователь не активен, вход не произведен")
         self.assertEqual(response.status_code, HTTPStatus.FOUND, "Переадресация не произошла")
         self.assertRedirects(response,
-                             reverse(settings.LOGIN_REDIRECT_URL)), "Переодресация не на ожидаемую страницу"
+                             reverse(settings.LOGIN_REDIRECT_URL)), "Переадресация не на ожидаемую страницу"
 
     def test_user_login_by_email_success(self):
         self.assertFalse(get_user(self.client).is_authenticated, "Пользователь уже активен")
@@ -96,7 +96,7 @@ class LoginUserTestCase(TestCase):
         self.assertTrue(get_user(self.client).is_authenticated, "Пользователь не активен, вход не произведен")
         self.assertEqual(response.status_code, HTTPStatus.FOUND, "Переадресация не произошла")
         self.assertRedirects(response,
-                             reverse(settings.LOGIN_REDIRECT_URL)), "Переодресация не на ожидаемую страницу"
+                             reverse(settings.LOGIN_REDIRECT_URL)), "Переадресация не на ожидаемую страницу"
 
 
 class ProfileUserTestCase(TestCase):
@@ -131,9 +131,9 @@ class ProfileUserTestCase(TestCase):
         response = self.client.post(self.path, data)
 
         self.assertEqual(response.status_code,
-                         HTTPStatus.FOUND), "После сохранения изменений не произошла переодресация"
+                         HTTPStatus.FOUND), "После сохранения изменений не произошла переадресация"
         self.assertRedirects(response,
-                             reverse('users:profile')), "Переодресация на другой адрес"
+                             reverse('users:profile')), "Переадресация на другой адрес"
         self.assertEqual(
             data['first_name'],
             self.user_model.objects.get(username=self.data['username']).first_name
@@ -141,6 +141,31 @@ class ProfileUserTestCase(TestCase):
 
     def test_user_logout(self):
         response = self.client.post(reverse('users:logout'))
+
         self.assertFalse(get_user(self.client).is_authenticated), "Пользователь не вышел"
-        self.assertEqual(response.status_code, HTTPStatus.FOUND), "Не выполнена переодресация после выхода"
-        self.assertRedirects(response, reverse(settings.LOGOUT_REDIRECT_URL)), "Переодресация на другой адрес"
+        self.assertEqual(response.status_code, HTTPStatus.FOUND), "Не выполнена переадресация после выхода"
+        self.assertRedirects(response, reverse(settings.LOGOUT_REDIRECT_URL)), "Переадресация на другой адрес"
+
+    def test_user_password_change_get(self):
+        response = self.client.get(reverse('users:password_change'))
+
+        self.assertEqual(response.status_code, HTTPStatus.OK, "Страница не загружена")
+        self.assertTemplateUsed(response, "users/password_change_form.html", "Загружен другой шаблон")
+
+    def test_user_password_change_success(self):
+        passwords = {
+            'old_password': self.data['password'],
+            'new_password1': self.data['password'] * 2,
+            'new_password2': self.data['password'] * 2
+        }
+        old_hash_password = get_user(self.client).password
+        response = self.client.post(reverse('users:password_change'), passwords)
+        new_hash_password = get_user(self.client).password
+
+        self.assertEqual(response.status_code, HTTPStatus.FOUND, "Не выполнена переадресация после смены пароля")
+        self.assertRedirects(
+            response,
+            reverse('users:password_change_done'),
+            HTTPStatus.FOUND, HTTPStatus.OK,
+            "Не выполнена переадресация после смены пароля")
+        self.assertNotEquals(old_hash_password, new_hash_password), "Пароль не изменился"

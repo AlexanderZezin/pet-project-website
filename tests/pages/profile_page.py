@@ -7,6 +7,7 @@ class ProfilePage(BasePage):
         assert self.is_element_present(*PPL.PROFILE_FORM), "Не найдена форма пользователя"
         assert self.is_element_present(*PPL.FIRST_NAME_INPUT), "Не найдено поле ввода имени пользователя"
         assert self.is_element_present(*PPL.UPDATE_BUTTON), "Не найдена кнопка сохранения изменений"
+        assert self.is_element_present(*PPL.CHANGE_PASSWORD_LINK), "Не найдена ссылка на изменение пароля"
 
     def should_by_logout_button(self):
         assert self.is_element_present(*PPL.LOGOUT_BUTTON), "Не найдена кнопка выхода из профиля"
