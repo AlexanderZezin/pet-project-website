@@ -35,10 +35,10 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        fields = ['username', 'first_name', 'email']
+        fields = ['username', 'first_name', 'last_name', 'email']
 
 
 class UserPasswordChangeForm(PasswordChangeForm):
-    old_password = forms.CharField(label="Старый пароль" ,widget=forms.PasswordInput())
-    new_password1 = forms.CharField(label="Новый пароль" ,widget=forms.PasswordInput())
-    new_password2 = forms.CharField(label="Подтверждение пароля" ,widget=forms.PasswordInput())
+    old_password = forms.CharField(label="Старый пароль", widget=forms.PasswordInput())
+    new_password1 = forms.CharField(label="Новый пароль", widget=forms.PasswordInput())
+    new_password2 = forms.CharField(label="Подтверждение пароля", widget=forms.PasswordInput())

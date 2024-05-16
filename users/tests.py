@@ -121,23 +121,27 @@ class ProfileUserTestCase(TestCase):
         response = self.client.get(self.path)
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertTemplateUsed(response, 'users/profile.html'), "Не тот шаблон html"
+        self.assertTemplateUsed(response, 'users/profile.html', "Не тот шаблон html")
 
     def test_authenticated_user(self):
         self.assertTrue(get_user(self.client).is_authenticated)
 
     def test_update_profile_success(self):
-        data = {'first_name': 'Alexander1'}
-        response = self.client.post(self.path, data)
+        new_data = {'first_name': 'Alexander1', 'last_name': 'Zezin'}
+        response = self.client.post(self.path, new_data)
 
         self.assertEqual(response.status_code,
                          HTTPStatus.FOUND), "После сохранения изменений не произошла переадресация"
         self.assertRedirects(response,
                              reverse('users:profile')), "Переадресация на другой адрес"
         self.assertEqual(
-            data['first_name'],
+            new_data['first_name'],
             self.user_model.objects.get(username=self.data['username']).first_name
-        ), "Изменения не сохранились в БД"
+        ), "Изменения(first_name) не сохранились в БД"
+        self.assertEqual(
+            new_data['last_name'],
+            self.user_model.objects.get(username=self.data['username']).last_name
+        ), "Изменения(last_name) не сохранились в БД"
 
     def test_user_logout(self):
         response = self.client.post(reverse('users:logout'))
@@ -166,6 +170,7 @@ class ProfileUserTestCase(TestCase):
         self.assertRedirects(
             response,
             reverse('users:password_change_done'),
-            HTTPStatus.FOUND, HTTPStatus.OK,
+            HTTPStatus.FOUND,
+            HTTPStatus.OK,
             "Не выполнена переадресация после смены пароля")
         self.assertNotEquals(old_hash_password, new_hash_password), "Пароль не изменился"
