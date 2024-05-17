@@ -67,11 +67,11 @@ class LoginUserTestCase(TestCase):
             'email': 'user1@mail.ru',
             'password': 'user1user1'
         }
-        user_model = get_user_model()
-        user_model.objects.create(username=self.data['username'], email=self.data['email'])
-        user = user_model.objects.get(username=self.data['username'])
-        user.set_password(self.data['password'])
-        user.save()
+        self.user_model = get_user_model()
+        self.user_model.objects.create(username=self.data['username'], email=self.data['email'])
+        self.user = self.user_model.objects.get(username=self.data['username'])
+        self.user.set_password(self.data['password'])
+        self.user.save()
 
     def test_form_login_get(self):
         response = self.client.get(self.path)
@@ -97,6 +97,44 @@ class LoginUserTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.FOUND, "Переадресация не произошла")
         self.assertRedirects(response,
                              reverse(settings.LOGIN_REDIRECT_URL)), "Переадресация не на ожидаемую страницу"
+
+    def test_user_reset_password_get(self):
+        path = reverse('users:password_reset')
+        response = self.client.get(path)
+
+        self.assertEqual(response.status_code, HTTPStatus.OK, "Страница не загружена")
+        self.assertTemplateUsed(response,
+                                'registration/password_reset_form.html',
+                                "Используется другой шаблон")
+
+    def test_user_reset_password_post(self):
+        path = reverse('users:password_reset')
+        email = self.data['email']
+        response = self.client.post(path, {'email': email})
+
+        self.assertRedirects(response, reverse('users:password_reset_done'), HTTPStatus.FOUND, HTTPStatus.OK,
+                             "Не выполнен переход после ввода email")
+
+        token = response.context[1]['token']
+        uid = response.context[1]['uid']
+
+        response = self.client.get(reverse('users:password_reset_confirm', args=[uid, token]))
+
+        self.assertRedirects(response, reverse('users:password_reset_confirm', args=[uid, 'set-password']),
+                             HTTPStatus.FOUND, HTTPStatus.OK)
+
+        old_hash_psw = self.user.password
+
+        response = self.client.post(reverse('users:password_reset_confirm', args=[uid, 'set-password']),
+                                    {'new_password1': self.data['password'] * 2,
+                                     'new_password2': self.data['password'] * 2})
+
+        self.assertRedirects(response, reverse('users:password_reset_complete'),
+                             HTTPStatus.FOUND, HTTPStatus.OK, "Не выполнен переход после ввода нового пароля")
+
+        new_hash_psw = self.user_model.objects.get(username=self.data['username']).password
+
+        self.assertNotEqual(old_hash_psw, new_hash_psw, "Пароль не изменился")
 
 
 class ProfileUserTestCase(TestCase):
