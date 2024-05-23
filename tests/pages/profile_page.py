@@ -13,10 +13,18 @@ class ProfilePage(BasePage):
         assert self.is_element_present(*PPL.LOGOUT_BUTTON), "Не найдена кнопка выхода из профиля"
 
     def get_current_first_name(self):
-        return self.driver.find_element(*PPL.FIRST_NAME_INPUT).text
+        return self.driver.find_element(*PPL.FIRST_NAME_INPUT).get_attribute('value')
+
+    def get_current_last_name(self):
+        return self.driver.find_element(*PPL.LAST_NAME_INPUT).get_attribute('value')
 
     def change_first_name(self, first_name):
+        self.driver.find_element(*PPL.FIRST_NAME_INPUT).clear()
         self.driver.find_element(*PPL.FIRST_NAME_INPUT).send_keys(first_name)
+
+    def change_last_name(self, last_name):
+        self.driver.find_element(*PPL.LAST_NAME_INPUT).clear()
+        self.driver.find_element(*PPL.LAST_NAME_INPUT).send_keys(last_name)
 
     def click_update_button(self):
         self.driver.find_element(*PPL.UPDATE_BUTTON).click()
