@@ -6,6 +6,7 @@ class ProfilePage(BasePage):
     def should_by_profile_form(self):
         assert self.is_element_present(*PPL.PROFILE_FORM), "Не найдена форма пользователя"
         assert self.is_element_present(*PPL.FIRST_NAME_INPUT), "Не найдено поле ввода имени пользователя"
+        assert self.is_element_present(*PPL.LAST_NAME_INPUT), "Не найдено поле ввода фамилии пользователя"
         assert self.is_element_present(*PPL.UPDATE_BUTTON), "Не найдена кнопка сохранения изменений"
         assert self.is_element_present(*PPL.CHANGE_PASSWORD_LINK), "Не найдена ссылка на изменение пароля"
 
@@ -31,3 +32,6 @@ class ProfilePage(BasePage):
 
     def click_logout_button(self):
         self.driver.find_element(*PPL.LOGOUT_BUTTON).click()
+
+    def click_change_password_button(self):
+        self.driver.find_element(*PPL.CHANGE_PASSWORD_LINK).click()

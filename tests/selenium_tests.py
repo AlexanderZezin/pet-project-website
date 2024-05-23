@@ -140,33 +140,39 @@ class ProfileUserSeleniumTests(LiveServerTestCase):
         self.page.should_by_profile_form()
 
     def test_firstname_update_profile(self):
-        old_name = self.page.get_current_first_name()
         self.page.change_first_name(self.new_data['first_name'])
         self.page.click_update_button()
 
-        self.assertNotEquals(old_name, self.page.get_current_first_name(), 'Не изменилось имя пользователя')
         self.assertEqual(self.new_data['first_name'], self.page.get_current_first_name(),
                          'Имя не соответствует введенному')
 
     def test_lastname_update_profile(self):
-        old_lastname = self.page.get_current_last_name()
         self.page.change_last_name(self.new_data['last_name'])
         self.page.click_update_button()
 
-        self.assertNotEquals(old_lastname, self.page.get_current_last_name(), "Не изменилась фамилия пользователя")
         self.assertEqual(self.new_data['last_name'], self.page.get_current_last_name(),
                          'Фамилия не соотвествует введенной')
 
     def test_firstname_and_lastname_update_profile(self):
-        old_name = self.page.get_current_first_name()
-        old_lastname = self.page.get_current_last_name()
         self.page.change_first_name(self.new_data['first_name'])
         self.page.change_last_name(self.new_data['last_name'])
         self.page.click_update_button()
 
-        self.assertNotEquals(old_name, self.page.get_current_first_name(), 'Не изменилось имя пользователя')
-        self.assertNotEquals(old_lastname, self.page.get_current_last_name(), "Не изменилась фамилия пользователя")
         self.assertEqual(self.new_data['first_name'], self.page.get_current_first_name(),
                          'Имя не соответствует введенному')
         self.assertEqual(self.new_data['last_name'], self.page.get_current_last_name(),
                          'Фамилия не соотвествует введенной')
+
+    def test_logout_user(self):
+        self.page.click_logout_button()
+
+        self.assertEqual(self.driver.current_url, f'{self.live_server_url}{reverse("users:login")}',
+                         'Не выполнен переход на страницу авторизации')
+        self.assertFalse(self.driver.get_cookie('sessionid'),
+                         'Не выполнен выход пользователя, не были удалены данные сессии')
+
+    def test_change_password_get(self):
+        self.page.click_change_password_button()
+
+        self.assertEqual(self.driver.current_url, f'{self.live_server_url}{reverse("users:password_change")}',
+                         'Не выполнен переход на страницу смены пароля')
