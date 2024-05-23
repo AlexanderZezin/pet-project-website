@@ -22,7 +22,8 @@ class LoginPageLocators:
 
 class ProfilePageLocators:
     PROFILE_FORM = (By.NAME, 'profile_form')
-    FIRST_NAME_INPUT = (By.NAME, "username")
+    FIRST_NAME_INPUT = (By.NAME, "first_name")
+    LAST_NAME_INPUT = (By.NAME, "last_name")
     UPDATE_BUTTON = (By.CSS_SELECTOR, 'form[name=profile_form] button')
     LOGOUT_BUTTON = (By.CSS_SELECTOR, 'form[name=logout_form] button')
     CHANGE_PASSWORD_LINK = (By.XPATH, '//body/a')
