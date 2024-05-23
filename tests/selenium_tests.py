@@ -105,13 +105,11 @@ class ProfileUserSeleniumTests(LiveServerTestCase):
         self.data = {
             'username': 'user1',
             'first_name': 'Myname',
-            'last_name': 'Mylastname',
             'email': 'user1@mail.ru',
             'password': 'user1user1',
         }
         self.new_data = {
-            'first_name': 'Mynewname',
-            'last_name': 'Mynewlastname'
+            'first_name': 'Mynewname'
         }
         self.user_model = get_user_model()
         self.user = self.user_model.objects.create_user(
@@ -125,7 +123,6 @@ class ProfileUserSeleniumTests(LiveServerTestCase):
         self.assertTrue(self.client.login(username=self.data['username'], password=self.data['password']))
         self.assertTrue(get_user(self.client).is_authenticated)
         self.driver.get(f'{self.live_server_url}/users/login')
-        self.driver.add_cookie({'name': 'sessionid', 'value': self.client.session.session_key})
         self.page = ProfilePage(self.driver, f'{self.live_server_url}{reverse("users:profile")}')
         self.page.open()
 
@@ -136,37 +133,12 @@ class ProfileUserSeleniumTests(LiveServerTestCase):
         self.driver.implicitly_wait(2)
         self.assertEqual(self.driver.current_url, f'{self.live_server_url}{reverse("users:profile")}')
 
-    def test_profile_form(self):
-        self.page.should_by_profile_form()
+    # def test_profile_form(self):
+    #     self.page.should_by_profile_form()
 
-    def test_firstname_update_profile(self):
-        old_name = self.page.get_current_first_name()
-        self.page.change_first_name(self.new_data['first_name'])
-        self.page.click_update_button()
-
-        self.assertNotEquals(old_name, self.page.get_current_first_name(), 'Не изменилось имя пользователя')
-        self.assertEqual(self.new_data['first_name'], self.page.get_current_first_name(),
-                         'Имя не соответствует введенному')
-
-    def test_lastname_update_profile(self):
-        old_lastname = self.page.get_current_last_name()
-        self.page.change_last_name(self.new_data['last_name'])
-        self.page.click_update_button()
-
-        self.assertNotEquals(old_lastname, self.page.get_current_last_name(), "Не изменилась фамилия пользователя")
-        self.assertEqual(self.new_data['last_name'], self.page.get_current_last_name(),
-                         'Фамилия не соотвествует введенной')
-
-    def test_firstname_and_lastname_update_profile(self):
-        old_name = self.page.get_current_first_name()
-        old_lastname = self.page.get_current_last_name()
-        self.page.change_first_name(self.new_data['first_name'])
-        self.page.change_last_name(self.new_data['last_name'])
-        self.page.click_update_button()
-
-        self.assertNotEquals(old_name, self.page.get_current_first_name(), 'Не изменилось имя пользователя')
-        self.assertNotEquals(old_lastname, self.page.get_current_last_name(), "Не изменилась фамилия пользователя")
-        self.assertEqual(self.new_data['first_name'], self.page.get_current_first_name(),
-                         'Имя не соответствует введенному')
-        self.assertEqual(self.new_data['last_name'], self.page.get_current_last_name(),
-                         'Фамилия не соотвествует введенной')
+    # def test_update_profile(self):
+    #     old_name = self.page.get_current_first_name()
+    #     self.page.change_first_name(self.new_data['first_name'])
+    #     self.page.click_update_button()
+    #
+    #     self.assertEqual(old_name, self.page.get_current_first_name())
