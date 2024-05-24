@@ -1,8 +1,7 @@
-from django.contrib.auth import get_user_model, authenticate, get_user
+from django.contrib.auth import get_user_model, get_user
 from django.contrib.staticfiles.testing import LiveServerTestCase
 from django.urls import reverse
 from selenium import webdriver
-
 from tests.pages.login_page import LoginPage
 from tests.pages.password_change_page import PasswordChangePage
 from tests.pages.profile_page import ProfilePage
@@ -152,7 +151,7 @@ class ProfileUserSeleniumTests(LiveServerTestCase):
         self.page.click_update_button()
 
         self.assertEqual(self.new_data['last_name'], self.page.get_current_last_name(),
-                         'Фамилия не соотвествует введенной')
+                         'Фамилия не соответствует введенной')
 
     def test_firstname_and_lastname_update_profile(self):
         self.page.change_first_name(self.new_data['first_name'])
@@ -162,7 +161,7 @@ class ProfileUserSeleniumTests(LiveServerTestCase):
         self.assertEqual(self.new_data['first_name'], self.page.get_current_first_name(),
                          'Имя не соответствует введенному')
         self.assertEqual(self.new_data['last_name'], self.page.get_current_last_name(),
-                         'Фамилия не соотвествует введенной')
+                         'Фамилия не соответствует введенной')
 
     def test_logout_user(self):
         self.page.click_logout_button()

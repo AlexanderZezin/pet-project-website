@@ -192,7 +192,8 @@ class ProfileUserTestCase(TestCase):
         response = self.client.get(reverse('users:password_change'))
 
         self.assertEqual(response.status_code, HTTPStatus.OK, "Страница не загружена")
-        self.assertTemplateUsed(response, "users/password_change_form.html", "Загружен другой шаблон")
+        self.assertTemplateUsed(response, "users/password_change_form.html",
+                                "Загружен другой шаблон")
 
     def test_user_password_change_success(self):
         passwords = {
