@@ -4,6 +4,7 @@ from django.urls import reverse
 from selenium import webdriver
 
 from tests.pages.login_page import LoginPage
+from tests.pages.password_change_page import PasswordChangePage
 from tests.pages.profile_page import ProfilePage
 from tests.pages.register_page import RegisterPage
 from website_django import settings
@@ -176,3 +177,63 @@ class ProfileUserSeleniumTests(LiveServerTestCase):
 
         self.assertEqual(self.driver.current_url, f'{self.live_server_url}{reverse("users:password_change")}',
                          'Не выполнен переход на страницу смены пароля')
+
+
+class PasswordChangeSeleniumTests(LiveServerTestCase):
+    def setUp(self):
+        self.data = {
+            'username': 'user1',
+            'first_name': 'Myname',
+            'last_name': 'Mylastname',
+            'email': 'user1@mail.ru',
+            'password': 'user1user1',
+        }
+        self.new_data = {
+            'first_name': 'Mynewname',
+            'last_name': 'Mynewlastname'
+        }
+        self.user_model = get_user_model()
+        self.user = self.user_model.objects.create_user(
+            username=self.data['username'],
+            email=self.data['email'],
+            first_name=self.data['first_name'],
+            password=self.data['password']
+        )
+
+        self.driver = webdriver.Chrome()
+        self.assertTrue(self.client.login(username=self.data['username'], password=self.data['password']))
+        self.assertTrue(get_user(self.client).is_authenticated)
+        self.driver.get(f'{self.live_server_url}/users/login')
+        self.driver.add_cookie({'name': 'sessionid', 'value': self.client.session.session_key})
+        self.page = PasswordChangePage(self.driver, f'{self.live_server_url}{reverse("users:password_change")}')
+        self.page.open()
+
+    def tearDown(self):
+        self.driver.quit()
+
+    def test_open_page(self):
+        self.assertEqual(self.driver.current_url, f'{self.live_server_url}{reverse("users:password_change")}')
+
+    def test_password_change_form(self):
+        self.page.should_by_password_change_from()
+
+    def test_password_change(self):
+        model = get_user_model()
+        old_hash_password = model.objects.get(username=self.data['username']).password
+        new_data = {
+            'old_password': self.data['password'],
+            'new_password1': self.data['password'] * 2,
+            'new_password2': self.data['password'] * 2
+        }
+        self.page.input_data(
+            old_password=new_data['old_password'],
+            new_password1=new_data['new_password1'],
+            new_password2=new_data['new_password2']
+        )
+        self.page.click_password_change_button()
+
+        new_hash_password = model.objects.get(username=self.data['username']).password
+
+        self.assertEqual(self.driver.current_url, f'{self.live_server_url}{reverse("users:password_change_done")}',
+                         'Не выполнен переход после смены пароля')
+        self.assertNotEquals(old_hash_password, new_hash_password, 'Пароль не изменился в БД')
