@@ -9,4 +9,5 @@ Django:
 
 
 API:
-- DRF API Session-based authentication  
+- API Session-based authentication
+- API регистрация пользователя с проверками username, email, password  
