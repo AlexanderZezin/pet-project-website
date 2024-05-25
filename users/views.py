@@ -3,7 +3,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
+from rest_framework import generics
+
 from users.forms import RegisterUserForm, UserProfileForm, LoginUserForm, UserPasswordChangeForm
+from users.serializers import RegisterUserSerializer
 
 
 class LoginUser(LoginView):
@@ -42,3 +45,8 @@ class UserPasswordChange(LoginRequiredMixin, PasswordChangeView):
 
     def get_success_url(self):
         return reverse_lazy('users:password_change_done')
+
+
+class APIRegisterUser(generics.CreateAPIView):
+    queryset = get_user_model().objects.all()
+    serializer_class = RegisterUserSerializer
