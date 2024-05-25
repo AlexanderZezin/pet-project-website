@@ -6,6 +6,7 @@ from . import views
 app_name = 'users'
 
 urlpatterns = [
+    path('api/v1/register/', views.APIRegisterUser.as_view()),
     path('login/', views.LoginUser.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('register/', views.RegisterUser.as_view(), name='register'),
