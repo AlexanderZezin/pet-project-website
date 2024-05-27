@@ -10,4 +10,5 @@ Django:
 
 API:
 - API Session-based authentication
-- API регистрация пользователя с проверками username, email, password  
+- API регистрация пользователя с проверками username, email, password
+- API редактирование пользователя (имя, фамилия)
