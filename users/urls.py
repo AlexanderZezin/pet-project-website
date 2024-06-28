@@ -8,6 +8,7 @@ app_name = 'users'
 urlpatterns = [
     path('api/v1/register/', views.APIRegisterUser.as_view()),
     path('api/v1/profile/', views.APIProfileUser.as_view()),
+    path('api/v1/password-change/', views.APIPasswordChangeUser.as_view()),
     path('login/', views.LoginUser.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('register/', views.RegisterUser.as_view(), name='register'),
