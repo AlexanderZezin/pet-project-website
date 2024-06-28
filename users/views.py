@@ -6,7 +6,7 @@ from django.views.generic import CreateView, UpdateView
 from rest_framework import generics
 
 from users.forms import RegisterUserForm, UserProfileForm, LoginUserForm, UserPasswordChangeForm
-from users.serializers import RegisterUserSerializer, ProfileUserSerializer
+from users.serializers import RegisterUserSerializer, ProfileUserSerializer, ChangePasswordSerializer
 
 
 class LoginUser(LoginView):
@@ -55,6 +55,14 @@ class APIRegisterUser(generics.CreateAPIView):
 class APIProfileUser(generics.RetrieveUpdateAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = ProfileUserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+
+class APIPasswordChangeUser(LoginRequiredMixin, generics.UpdateAPIView):
+    queryset = get_user_model().objects.all()
+    serializer_class = ChangePasswordSerializer
 
     def get_object(self):
         return self.request.user
