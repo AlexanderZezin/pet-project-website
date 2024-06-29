@@ -4,17 +4,20 @@ from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 
+def validate_password(password):
+    try:
+        dj_validate_password(password)
+    except ValidationError as error:
+        raise serializers.ValidationError(error.messages)
+    return password
+
+
 class RegisterUserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(validators=[validate_password])
+
     class Meta:
         model = get_user_model()
         fields = ['username', 'email', 'first_name', 'last_name', 'password']
-
-    def validate_password(self, password):
-        try:
-            dj_validate_password(password)
-        except ValidationError as error:
-            raise serializers.ValidationError(error.messages)
-        return password
 
     def create(self, validated_data):
         return get_user_model().objects.create_user(**validated_data)
@@ -30,9 +33,9 @@ class ProfileUserSerializer(serializers.ModelSerializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(required=False)
-    new_password1 = serializers.CharField(required=False)
-    new_password2 = serializers.CharField(required=False)
+    old_password = serializers.CharField(write_only=True)
+    new_password1 = serializers.CharField(write_only=True)
+    new_password2 = serializers.CharField(write_only=True, validators=[validate_password])
 
     def validate(self, data):
         if data['new_password1'] != data['new_password2']:
@@ -43,13 +46,6 @@ class ChangePasswordSerializer(serializers.Serializer):
         if not self.instance.check_password(old_password):
             raise serializers.ValidationError("Не верен старый пароль")
         return old_password
-
-    def validate_new_password2(self, password):
-        try:
-            dj_validate_password(password)
-        except ValidationError as error:
-            raise serializers.ValidationError(error.messages)
-        return password
 
     def update(self, instance, validated_data):
         instance.set_password(validated_data.get('new_password2'))
