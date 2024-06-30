@@ -6,6 +6,9 @@ from django.views.generic import CreateView, UpdateView
 
 from rest_framework import generics
 
+from drf_excel.mixins import XLSXFileMixin
+from drf_excel.renderers import XLSXRenderer
+
 from rest_framework_csv.renderers import CSVRenderer
 
 from users.forms import RegisterUserForm, UserProfileForm, LoginUserForm, UserPasswordChangeForm
@@ -86,3 +89,15 @@ class APIUserCSV(CSVFileMixin, generics.RetrieveAPIView):
 
     def get_filename(self, request=None, *args, **kwargs):
         return f'{self.request.user.username}.csv'
+
+
+class APIUserXLSX(XLSXFileMixin, generics.RetrieveAPIView):
+    renderer_classes = [XLSXRenderer]
+    queryset = get_user_model().objects.all()
+    serializer_class = ProfileUserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def get_filename(self, request=None, *args, **kwargs):
+        return f'{self.request.user.username}.xlsx'
