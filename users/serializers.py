@@ -29,7 +29,7 @@ class ProfileUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['username', 'email', 'first_name', 'last_name']
 
 
 class ChangePasswordSerializer(serializers.Serializer):
