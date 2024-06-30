@@ -3,9 +3,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
+
 from rest_framework import generics
 
+from rest_framework_csv.renderers import CSVRenderer
+
 from users.forms import RegisterUserForm, UserProfileForm, LoginUserForm, UserPasswordChangeForm
+from users.mixins_csv import CSVFileMixin
 from users.serializers import RegisterUserSerializer, ProfileUserSerializer, ChangePasswordSerializer
 
 
@@ -66,3 +70,19 @@ class APIPasswordChangeUser(LoginRequiredMixin, generics.UpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class UserRender(CSVRenderer):
+    header = ['username', 'email', 'first_name', 'last_name']
+
+
+class APIUserCSV(CSVFileMixin, generics.RetrieveAPIView):
+    renderer_classes = [UserRender]
+    queryset = get_user_model().objects.all()
+    serializer_class = ProfileUserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def get_filename(self, request=None, *args, **kwargs):
+        return f'{self.request.user.username}.csv'
