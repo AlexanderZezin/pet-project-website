@@ -146,4 +146,7 @@ REST_FRAMEWORK = {
         'rest_framework_csv.renderers.CSVRenderer',
         'drf_excel.renderers.XLSXRenderer',
     ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 }

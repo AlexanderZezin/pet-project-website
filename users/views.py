@@ -8,6 +8,7 @@ from rest_framework import generics
 
 from drf_excel.mixins import XLSXFileMixin
 from drf_excel.renderers import XLSXRenderer
+from rest_framework.permissions import IsAuthenticated
 
 from rest_framework_csv.renderers import CSVRenderer
 
@@ -60,6 +61,7 @@ class APIRegisterUser(generics.CreateAPIView):
 
 
 class APIProfileUser(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = get_user_model().objects.all()
     serializer_class = ProfileUserSerializer
 
@@ -67,7 +69,8 @@ class APIProfileUser(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class APIPasswordChangeUser(LoginRequiredMixin, generics.UpdateAPIView):
+class APIPasswordChangeUser(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = get_user_model().objects.all()
     serializer_class = ChangePasswordSerializer
 
@@ -80,6 +83,7 @@ class UserRender(CSVRenderer):
 
 
 class APIUserCSV(CSVFileMixin, generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
     renderer_classes = [UserRender]
     queryset = get_user_model().objects.all()
     serializer_class = ProfileUserSerializer
@@ -92,6 +96,7 @@ class APIUserCSV(CSVFileMixin, generics.RetrieveAPIView):
 
 
 class APIUserXLSX(XLSXFileMixin, generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
     renderer_classes = [XLSXRenderer]
     queryset = get_user_model().objects.all()
     serializer_class = ProfileUserSerializer
