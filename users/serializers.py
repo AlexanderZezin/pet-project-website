@@ -13,13 +13,20 @@ def validate_password(password):
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(validators=[validate_password])
+    password1 = serializers.CharField(write_only=True, label='Введите пароль')
+    password = serializers.CharField(write_only=True, label='Повторите пароль', validators=[validate_password])
+
+    def validate(self, data):
+        if data['password1'] != data['password']:
+            raise serializers.ValidationError("Пароли не совпадают")
+        return data
 
     class Meta:
         model = get_user_model()
-        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password']
 
     def create(self, validated_data):
+        del validated_data['password1']
         return get_user_model().objects.create_user(**validated_data)
 
 
